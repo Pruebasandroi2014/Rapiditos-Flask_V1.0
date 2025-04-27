@@ -125,14 +125,16 @@
                                 setTimeout(() => input.style.backgroundColor = '', 500);
 
                                 // Verificar si ambas ubicaciones están seleccionadas y calcular
-                                const inicioLat = document.getElementById('inicioLat').value;
-                                const inicioLng = document.getElementById('inicioLng').value;
-                                const destinoLat = document.getElementById('destinoLat').value;
-                                const destinoLng = document.getElementById('destinoLng').value;
+                                setTimeout(() => {
+                                    const inicioLat = document.getElementById('inicioLat').value;
+                                    const inicioLng = document.getElementById('inicioLng').value;
+                                    const destinoLat = document.getElementById('destinoLat').value;
+                                    const destinoLng = document.getElementById('destinoLng').value;
 
-                                if (inicioLat && inicioLng && destinoLat && destinoLng) {
-                                    calcularDistancia();
-                                }
+                                    if (inicioLat && inicioLng && destinoLat && destinoLng) {
+                                        calcularDistancia();
+                                    }
+                                }, 100);
                             });
                             resultados.appendChild(li);
                         });
@@ -178,7 +180,13 @@
                 });
                 const data = await response.json();
                 const resultadoElement = document.getElementById('resultado');
-                resultadoElement.textContent = data.mensaje;
+                if (data.success) {
+                    resultadoElement.textContent = data.mensaje;
+                    resultadoElement.style.color = '#4CAF50';
+                } else {
+                    resultadoElement.textContent = 'Error: ' + data.mensaje;
+                    resultadoElement.style.color = '#f44336';
+                }
                 resultadoElement.style.display = 'block';
             } catch (error) {
                 console.error('Error:', error);
