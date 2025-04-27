@@ -37,3 +37,14 @@ if coordenadas_inicio and coordenadas_destino:
     print(f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km")
 else:
     print("Error al obtener coordenadas.")
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return 'Hello, World!'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
