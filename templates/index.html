@@ -118,13 +118,12 @@
             marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
             
             // Limpiar resultados de búsqueda
-            const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
-            if (searchInput) {
-                searchInput.value = result.location.label || '';
-                // Ocultar resultados
-                const resultsList = document.querySelector('#mapaInicio .results');
-                if (resultsList) {
-                    resultsList.style.display = 'none';
+            const searchControl = searchInicio.searchElement;
+            if (searchControl) {
+                searchControl.clear();
+                const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
+                if (searchInput) {
+                    searchInput.value = result.location.label || '';
                 }
             }
             // Centrar mapa en la ubicación seleccionada
@@ -144,13 +143,12 @@
             marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
             
             // Limpiar resultados de búsqueda
-            const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
-            if (searchInput) {
-                searchInput.value = result.location.label || '';
-                // Ocultar resultados
-                const resultsList = document.querySelector('#mapaDestino .results');
-                if (resultsList) {
-                    resultsList.style.display = 'none';
+            const searchControl = searchDestino.searchElement;
+            if (searchControl) {
+                searchControl.clear();
+                const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
+                if (searchInput) {
+                    searchInput.value = result.location.label || '';
                 }
             }
             // Centrar mapa en la ubicación seleccionada
