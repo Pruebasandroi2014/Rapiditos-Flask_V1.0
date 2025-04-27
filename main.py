@@ -67,9 +67,11 @@ def calcular():
 
         distancia = calcular_distancia(lat1, lon1, lat2, lon2)
         if distancia:
+            costo = distancia * config.COSTO_POR_KM
             return jsonify({
                 "success": True,
                 "distancia": distancia,
+                "costo": costo,
                 "mensaje": f"La distancia es: {distancia} km"
             })
         return jsonify({
