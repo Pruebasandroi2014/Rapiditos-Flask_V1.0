@@ -23,14 +23,28 @@ def obtener_coordenadas(direccion):
         return None
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
-    url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
-    response = requests.get(url)
-    data = response.json()
-
-    if "routes" in data and data["routes"]:
-        distancia_km = data["routes"][0]["distance"] / 1000
-        return round(distancia_km, 2)
-    return None
+    try:
+        url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
+        response = requests.get(url)
+        
+        if response.status_code != 200:
+            print(f"Error en la API: {response.status_code}")
+            return None
+            
+        data = response.json()
+        
+        if data.get("code") != "Ok":
+            print(f"Error en la respuesta: {data.get('message', 'Error desconocido')}")
+            return None
+            
+        if "routes" in data and data["routes"]:
+            distancia_km = data["routes"][0]["distance"] / 1000
+            return round(distancia_km, 2)
+            
+        return None
+    except Exception as e:
+        print(f"Error al calcular distancia: {str(e)}")
+        return None
 
 @app.route('/')
 def home():
