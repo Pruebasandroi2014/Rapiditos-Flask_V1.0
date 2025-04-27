@@ -260,7 +260,12 @@
 
             if (isNaN(inicioLat) || isNaN(inicioLng) || isNaN(destinoLat) || isNaN(destinoLng)) return;
 
+            document.getElementById('map').style.display = 'block';
+            if (window.routingControl) {
+                window.routingControl.remove();
+            }
             const map = L.map('map').setView([inicioLat, inicioLng], 13);
+            window.routingControl =
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
@@ -278,8 +283,9 @@
                     L.latLng(destinoLat, destinoLng)
                 ],
                 router: L.Routing.osrmv1({
-                    serviceUrl: 'https://router.project-osrm.org/route/v1/driving',
-                    profile: 'car'
+                    serviceUrl: 'https://router.project-osrm.org/route/v1',
+                    profile: 'driving',
+                    timeout: 30000
                 }),
                 routeWhileDragging: false,
                 showAlternatives: true,
