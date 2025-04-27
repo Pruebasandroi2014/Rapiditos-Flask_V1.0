@@ -28,9 +28,12 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
         return round(distancia_km, 2)
     return None
 
+import os
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    api_key = os.environ.get('GOOGLE_MAPS_API_KEY', '')
+    return render_template('index.html', api_key=api_key)
 
 @app.route('/calcular', methods=['POST'])
 def calcular():
