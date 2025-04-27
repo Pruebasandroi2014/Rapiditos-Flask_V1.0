@@ -56,7 +56,7 @@ def calcular():
         })
     return jsonify({
         "success": False,
-        "mensaje": f"Error al obtener coordenadas. Por favor verifica que las direcciones sean válidas y estén escritas correctamente. Ejemplo: 'Caracas, Venezuela' o 'Maracaibo, Venezuela'"
+        "mensaje": "No se pudo calcular la distancia. Por favor, asegúrate de escribir direcciones válidas y específicas, incluyendo la ciudad y el país. Por ejemplo: 'Caracas, Venezuela' o 'Maracaibo, Venezuela'"
     })
 
 if __name__ == '__main__':
