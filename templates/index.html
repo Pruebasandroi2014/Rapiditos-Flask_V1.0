@@ -130,6 +130,51 @@
         <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
 
     <script>
+        function initAutocomplete() {
+            const inicioAutocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('inicio'),
+                { types: ['geocode'] }
+            );
+            
+            const destinoAutocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('destino'),
+                { types: ['geocode'] }
+            );
+
+            inicioAutocomplete.addListener('place_changed', () => {
+                const place = inicioAutocomplete.getPlace();
+                if (place.geometry) {
+                    document.getElementById('inicioLat').value = place.geometry.location.lat();
+                    document.getElementById('inicioLng').value = place.geometry.location.lng();
+                    document.getElementById('inicio').style.backgroundColor = '#e8f5e9';
+                    setTimeout(() => document.getElementById('inicio').style.backgroundColor = '', 500);
+                    checkAndCalculate();
+                }
+            });
+
+            destinoAutocomplete.addListener('place_changed', () => {
+                const place = destinoAutocomplete.getPlace();
+                if (place.geometry) {
+                    document.getElementById('destinoLat').value = place.geometry.location.lat();
+                    document.getElementById('destinoLng').value = place.geometry.location.lng();
+                    document.getElementById('destino').style.backgroundColor = '#e8f5e9';
+                    setTimeout(() => document.getElementById('destino').style.backgroundColor = '', 500);
+                    checkAndCalculate();
+                }
+            });
+        }
+
+        function checkAndCalculate() {
+            const inicioLat = document.getElementById('inicioLat').value;
+            const inicioLng = document.getElementById('inicioLng').value;
+            const destinoLat = document.getElementById('destinoLat').value;
+            const destinoLng = document.getElementById('destinoLng').value;
+
+            if (inicioLat && inicioLng && destinoLat && destinoLng) {
+                calcularDistancia();
+            }
+        }
+
         function limpiarInput(inputId, latId, lngId) {
             document.getElementById(inputId).value = '';
             document.getElementById(latId).value = '';
@@ -336,6 +381,10 @@
 
             document.getElementById('map').style.display = 'block';
         });
+    </script>
+    <script>
+        // Inicializar el autocompletado cuando se carga la página
+        window.onload = initAutocomplete;
     </script>
 </body>
 </html>
