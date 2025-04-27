@@ -81,7 +81,7 @@
             <input type="hidden" id="destinoLng">
         </div>
         </form>
-    <label id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></label>
+    <label id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; color: #333; font-size: 18px;"></label>
 
     <script>
         let timeoutId;
@@ -177,7 +177,9 @@
                     body: formData
                 });
                 const data = await response.json();
-                document.getElementById('resultado').textContent = data.mensaje;
+                const resultadoElement = document.getElementById('resultado');
+                resultadoElement.textContent = data.mensaje;
+                resultadoElement.style.display = 'block';
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('resultado').textContent = "Error al calcular la distancia";
