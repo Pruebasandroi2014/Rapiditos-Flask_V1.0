@@ -80,8 +80,7 @@
             <input type="hidden" id="destinoLat">
             <input type="hidden" id="destinoLng">
         </div>
-        <button type="submit">Calcular Distancia</button>
-    </form>
+        </form>
     <div id="resultado"></div>
 
     <script>
@@ -106,10 +105,9 @@
 
             input.addEventListener('input', () => {
                 clearTimeout(timeoutId);
-                // Limpiar coordenadas cuando el usuario empieza a escribir
                 latInput.value = '';
                 lngInput.value = '';
-                
+
                 timeoutId = setTimeout(async () => {
                     if (input.value.length > 2) {
                         const direcciones = await buscarDirecciones(input.value);
@@ -125,6 +123,16 @@
                                 resultados.style.display = 'none';
                                 input.style.backgroundColor = '#e8f5e9';
                                 setTimeout(() => input.style.backgroundColor = '', 500);
+
+                                // Verificar si ambas ubicaciones están seleccionadas y calcular
+                                const inicioLat = document.getElementById('inicioLat').value;
+                                const inicioLng = document.getElementById('inicioLng').value;
+                                const destinoLat = document.getElementById('destinoLat').value;
+                                const destinoLng = document.getElementById('destinoLng').value;
+
+                                if (inicioLat && inicioLng && destinoLat && destinoLng) {
+                                    calcularDistancia();
+                                }
                             });
                             resultados.appendChild(li);
                         });
@@ -136,7 +144,6 @@
                 }, 300);
             });
 
-            // Limpiar resultados cuando se hace clic fuera
             document.addEventListener('click', (e) => {
                 if (!input.contains(e.target) && !resultados.contains(e.target)) {
                     resultados.innerHTML = '';
@@ -148,9 +155,8 @@
         configurarBusqueda('inicio', 'resultadosInicio', 'inicioLat', 'inicioLng');
         configurarBusqueda('destino', 'resultadosDestino', 'destinoLat', 'destinoLng');
 
-        document.getElementById('formulario').onsubmit = async function(e) {
-            e.preventDefault();
 
+        async function calcularDistancia() {
             const inicioLat = document.getElementById('inicioLat').value;
             const inicioLng = document.getElementById('inicioLng').value;
             const destinoLat = document.getElementById('destinoLat').value;
@@ -176,7 +182,7 @@
                 console.error('Error:', error);
                 document.getElementById('resultado').textContent = "Error al calcular la distancia";
             }
-        };
+        }
     </script>
 </body>
 </html>
