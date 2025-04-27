@@ -116,6 +116,12 @@
                 mapaInicio.removeLayer(marcadorInicio);
             }
             marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
+            
+            // Limpiar el campo de búsqueda
+            const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
+            if (searchInput) {
+                searchInput.value = result.location.label || '';
+            }
         }
 
         function actualizarMarcadorDestino(result) {
@@ -129,6 +135,12 @@
                 mapaDestino.removeLayer(marcadorDestino);
             }
             marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
+            
+            // Limpiar el campo de búsqueda
+            const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
+            if (searchInput) {
+                searchInput.value = result.location.label || '';
+            }
         }
 
         let marcadorInicio = null;
