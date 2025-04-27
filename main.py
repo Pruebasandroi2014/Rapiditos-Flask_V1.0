@@ -72,7 +72,7 @@ def calcular():
                 "success": True,
                 "distancia": distancia,
                 "costo": costo,
-                "mensaje": f"La distancia es: {distancia} km"
+                "mensaje": f"La distancia es: {distancia} km y el costo es: ${costo:.2f}"
             })
         return jsonify({
             "success": False,

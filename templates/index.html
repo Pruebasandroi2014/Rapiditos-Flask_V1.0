@@ -181,7 +181,10 @@
                 const data = await response.json();
                 const resultadoElement = document.getElementById('resultado');
                 if (data.success) {
-                    resultadoElement.textContent = data.mensaje;
+                    resultadoElement.innerHTML = `
+                        <div>Distancia: ${data.distancia} km</div>
+                        <div>Costo: $${data.costo.toFixed(2)}</div>
+                    `;
                     resultadoElement.style.color = '#4CAF50';
                 } else {
                     resultadoElement.textContent = 'No se pudo calcular la distancia. Por favor, intente nuevamente.';
