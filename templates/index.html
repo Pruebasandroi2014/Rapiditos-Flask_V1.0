@@ -110,6 +110,7 @@
                 y: result.location.lat || result.location.y,
                 x: result.location.lng || result.location.x
             };
+            console.log("Inicio seleccionado:", coordenadasInicio);
         });
 
         mapaDestino.on('geosearch/showlocation', function(result) {
@@ -117,6 +118,25 @@
                 y: result.location.lat || result.location.y,
                 x: result.location.lng || result.location.x
             };
+            console.log("Destino seleccionado:", coordenadasDestino);
+        });
+
+        // Agregar marcadores cuando se seleccionen ubicaciones
+        let marcadorInicio = null;
+        let marcadorDestino = null;
+
+        mapaInicio.on('geosearch/showlocation', function(result) {
+            if (marcadorInicio) {
+                mapaInicio.removeLayer(marcadorInicio);
+            }
+            marcadorInicio = L.marker([result.location.lat || result.location.y, result.location.lng || result.location.x]).addTo(mapaInicio);
+        });
+
+        mapaDestino.on('geosearch/showlocation', function(result) {
+            if (marcadorDestino) {
+                mapaDestino.removeLayer(marcadorDestino);
+            }
+            marcadorDestino = L.marker([result.location.lat || result.location.y, result.location.lng || result.location.x]).addTo(mapaDestino);
         });
 
         // Manejar envío del formulario
