@@ -3,13 +3,17 @@
 <html>
 <head>
     <title>Calculadora de Distancia</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.umd.js"></script>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
         .form-group { margin-bottom: 15px; }
         input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; }
         button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
         #resultado { margin-top: 20px; padding: 10px; border: 1px solid #ddd; }
+        .leaflet-container { height: 200px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -18,38 +22,49 @@
         <div class="form-group">
             <label>Dirección de Inicio:</label>
             <input type="text" id="inicio" name="inicio" required>
+            <div id="mapaInicio" style="height: 200px;"></div>
         </div>
         <div class="form-group">
             <label>Dirección de Destino:</label>
             <input type="text" id="destino" name="destino" required>
+            <div id="mapaDestino" style="height: 200px;"></div>
         </div>
         <button type="submit">Calcular Distancia</button>
     </form>
     <div id="resultado"></div>
 
     <script>
-        // Configurar autocompletado
-        function initAutocomplete() {
-            const opcionesAutocomplete = {
-                types: ['geocode'],
-                fields: ['formatted_address', 'geometry'],
-                componentRestrictions: { country: 'VE' }  // Restringir a Venezuela
-            };
+        // Configurar mapas
+        const mapaInicio = L.map('mapaInicio').setView([10.4806, -66.9036], 13);
+        const mapaDestino = L.map('mapaDestino').setView([10.4806, -66.9036], 13);
 
-            const autocompleteInicio = new google.maps.places.Autocomplete(
-                document.getElementById('inicio'),
-                opcionesAutocomplete
-            );
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mapaInicio);
 
-            const autocompleteDestino = new google.maps.places.Autocomplete(
-                document.getElementById('destino'),
-                opcionesAutocomplete
-            );
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mapaDestino);
 
-            // Activar búsqueda en tiempo real
-            autocompleteInicio.setFields(['address_components', 'formatted_address', 'geometry']);
-            autocompleteDestino.setFields(['address_components', 'formatted_address', 'geometry']);
-        }
+        // Configurar búsqueda
+        const provider = new GeoSearch.OpenStreetMapProvider();
+        
+        const searchInicio = new GeoSearch.GeoSearchControl({
+            provider: provider,
+            style: 'bar',
+            showMarker: true,
+            retainZoomLevel: false,
+        });
+
+        const searchDestino = new GeoSearch.GeoSearchControl({
+            provider: provider,
+            style: 'bar',
+            showMarker: true,
+            retainZoomLevel: false,
+        });
+
+        mapaInicio.addControl(searchInicio);
+        mapaDestino.addControl(searchDestino);
 
         // Manejar envío del formulario
         document.getElementById('formulario').onsubmit = async function(e) {
@@ -67,9 +82,6 @@
                 console.error('Error:', error);
             }
         };
-
-        // Inicializar autocompletado
-        initAutocomplete();
     </script>
 </body>
 </html>
