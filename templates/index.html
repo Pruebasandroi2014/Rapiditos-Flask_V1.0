@@ -107,7 +107,16 @@
             <input type="hidden" id="destinoLng">
         </div>
         </form>
-    <label id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; color: #333; font-size: 18px;"></label>
+    <div id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; color: #333; font-size: 18px;"></div>
+
+        <button id="mostrarRuta" style="display: none; margin-top: 20px; width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+            Mostrar Ruta en el Mapa
+        </button>
+
+        <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px; display: none;"></div>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     <script>
         function limpiarInput(inputId, latId, lngId) {
@@ -116,7 +125,7 @@
             document.getElementById(lngId).value = '';
             document.getElementById(inputId).style.backgroundColor = '';
         }
-        
+
         let timeoutId;
 
         async function buscarDirecciones(texto) {
@@ -218,6 +227,7 @@
                         <div>Costo: $${data.costo.toFixed(2)}</div>
                     `;
                     resultadoElement.style.color = '#4CAF50';
+                    document.getElementById('mostrarRuta').style.display = 'block';
                 } else {
                     resultadoElement.textContent = 'No se pudo calcular la distancia. Por favor, intente nuevamente.';
                     resultadoElement.style.color = '#f44336';
@@ -228,6 +238,36 @@
                 document.getElementById('resultado').textContent = "Error al calcular la distancia";
             }
         }
+
+        document.getElementById('mostrarRuta').addEventListener('click', () => {
+            const inicioLat = parseFloat(document.getElementById('inicioLat').value);
+            const inicioLng = parseFloat(document.getElementById('inicioLng').value);
+            const destinoLat = parseFloat(document.getElementById('destinoLat').value);
+            const destinoLng = parseFloat(document.getElementById('destinoLng').value);
+
+            if (isNaN(inicioLat) || isNaN(inicioLng) || isNaN(destinoLat) || isNaN(destinoLng)) return;
+
+            const map = L.map('map').setView([inicioLat, inicioLng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const inicioMarker = L.marker([inicioLat, inicioLng]).addTo(map);
+            const destinoMarker = L.marker([destinoLat, destinoLng]).addTo(map);
+
+            const routeControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(inicioLat, inicioLng),
+                    L.latLng(destinoLat, destinoLng)
+                ],
+                router: L.Routing.osrmv1({
+                    serviceUrl: 'https://router.project-osrm.org/route/v1/driving/'
+                }),
+                routeWhileDragging: true,
+            }).addTo(map);
+
+            document.getElementById('map').style.display = 'block';
+        });
     </script>
 </body>
 </html>
