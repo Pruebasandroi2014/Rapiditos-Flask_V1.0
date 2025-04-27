@@ -6,17 +6,21 @@ import time
 app = Flask(__name__)
 
 def obtener_coordenadas(direccion):
-    url = f"https://nominatim.openstreetmap.org/search?q={direccion}&format=json"
-    headers = {'User-Agent': 'Replit Distance Calculator'}
-    response = requests.get(url, headers=headers)
-    data = response.json()
+    try:
+        url = f"https://nominatim.openstreetmap.org/search?q={direccion}&format=json"
+        headers = {'User-Agent': 'Replit Distance Calculator'}
+        response = requests.get(url, headers=headers)
+        data = response.json()
 
-    if data and len(data) > 0:
-        lat = float(data[0]["lat"])
-        lon = float(data[0]["lon"])
-        time.sleep(1)  # Respetar límites de uso
-        return lat, lon
-    return None
+        if data and len(data) > 0:
+            lat = float(data[0]["lat"])
+            lon = float(data[0]["lon"])
+            time.sleep(1)  # Respetar límites de uso
+            return lat, lon
+        return None
+    except Exception as e:
+        print(f"Error al obtener coordenadas para {direccion}: {str(e)}")
+        return None
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
     url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
@@ -52,7 +56,7 @@ def calcular():
         })
     return jsonify({
         "success": False,
-        "mensaje": "Error al obtener coordenadas."
+        "mensaje": f"Error al obtener coordenadas. Por favor verifica que las direcciones sean válidas y estén escritas correctamente. Ejemplo: 'Caracas, Venezuela' o 'Maracaibo, Venezuela'"
     })
 
 if __name__ == '__main__':
