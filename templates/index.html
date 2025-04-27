@@ -123,6 +123,8 @@
                                 lngInput.value = dir.lon;
                                 resultados.innerHTML = '';
                                 resultados.style.display = 'none';
+                                input.style.backgroundColor = '#e8f5e9';
+                                setTimeout(() => input.style.backgroundColor = '', 500);
                             });
                             resultados.appendChild(li);
                         });
@@ -155,7 +157,7 @@
             const destinoLng = document.getElementById('destinoLng').value;
 
             if (!inicioLat || !inicioLng || !destinoLat || !destinoLng) {
-                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones de la lista de sugerencias para ambos puntos";
+                document.getElementById('resultado').innerHTML = '<span style="color: red; font-weight: bold">⚠️ Por favor selecciona una dirección de la lista desplegable que aparece al escribir, tanto para el inicio como para el destino</span>';
                 return;
             }
 
