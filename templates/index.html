@@ -57,14 +57,12 @@
     <h1>Calculadora de Distancia</h1>
     <form id="formulario">
         <div class="form-group">
-            <label>Dirección de Inicio:</label>
-            <input type="text" id="inicio" name="inicio" required>
-            <div id="mapaInicio" style="height: 200px;"></div>
+            <label>Ubicación de Inicio:</label>
+            <div id="mapaInicio" style="height: 300px;"></div>
         </div>
         <div class="form-group">
-            <label>Dirección de Destino:</label>
-            <input type="text" id="destino" name="destino" required>
-            <div id="mapaDestino" style="height: 200px;"></div>
+            <label>Ubicación de Destino:</label>
+            <div id="mapaDestino" style="height: 300px;"></div>
         </div>
         <button type="submit">Calcular Distancia</button>
     </form>
@@ -109,12 +107,10 @@
         // Manejar selección en los mapas
         mapaInicio.on('geosearch/showlocation', function(result) {
             coordenadasInicio = result.location;
-            document.getElementById('inicio').value = result.location.label;
         });
 
         mapaDestino.on('geosearch/showlocation', function(result) {
             coordenadasDestino = result.location;
-            document.getElementById('destino').value = result.location.label;
         });
 
         // Manejar envío del formulario
