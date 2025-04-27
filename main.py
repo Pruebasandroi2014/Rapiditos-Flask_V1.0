@@ -32,12 +32,9 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
         return round(distancia_km, 2)
     return None
 
-import os
-
 @app.route('/')
 def home():
-    api_key = os.environ.get('GOOGLE_MAPS_API_KEY', '')
-    return render_template('index.html', api_key=api_key)
+    return render_template('index.html')
 
 @app.route('/calcular', methods=['POST'])
 def calcular():
@@ -50,16 +47,20 @@ def calcular():
         
         distancia = calcular_distancia(lat1, lon1, lat2, lon2)
         if distancia:
-        distancia = calcular_distancia(*coordenadas_inicio, *coordenadas_destino)
+            return jsonify({
+                "success": True,
+                "distancia": distancia,
+                "mensaje": f"La distancia es: {distancia} km"
+            })
         return jsonify({
-            "success": True,
-            "distancia": distancia,
-            "mensaje": f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km"
+            "success": False,
+            "mensaje": "No se pudo calcular la distancia entre los puntos seleccionados"
         })
-    return jsonify({
-        "success": False,
-        "mensaje": "No se pudo calcular la distancia. Por favor, asegúrate de escribir direcciones válidas y específicas, incluyendo la ciudad y el país. Por ejemplo: 'Caracas, Venezuela' o 'Maracaibo, Venezuela'"
-    })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "mensaje": f"Error al calcular la distancia: {str(e)}"
+        })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
