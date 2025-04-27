@@ -1,5 +1,5 @@
 
-from flask import Flask
+from flask import Flask, render_template, request, jsonify
 import requests
 import time
 
@@ -29,21 +29,28 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
     return None
 
 @app.route('/')
-def hello():
-    return 'Hello, World!'
+def home():
+    return render_template('index.html')
 
-@app.route('/calcular')
+@app.route('/calcular', methods=['POST'])
 def calcular():
-    direccion_inicio = "Caracas, Venezuela"
-    direccion_destino = "Maracaibo, Venezuela"
+    direccion_inicio = request.form['inicio']
+    direccion_destino = request.form['destino']
     
     coordenadas_inicio = obtener_coordenadas(direccion_inicio)
     coordenadas_destino = obtener_coordenadas(direccion_destino)
     
     if coordenadas_inicio and coordenadas_destino:
         distancia = calcular_distancia(*coordenadas_inicio, *coordenadas_destino)
-        return f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km"
-    return "Error al obtener coordenadas."
+        return jsonify({
+            "success": True,
+            "distancia": distancia,
+            "mensaje": f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km"
+        })
+    return jsonify({
+        "success": False,
+        "mensaje": "Error al obtener coordenadas."
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
