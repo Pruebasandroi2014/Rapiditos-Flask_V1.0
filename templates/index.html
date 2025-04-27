@@ -69,14 +69,20 @@
     <form id="formulario">
         <div class="form-group">
             <label>Ubicación de Inicio:</label>
-            <input type="text" id="inicio" class="search-input" placeholder="Ingrese dirección de inicio">
+            <div style="position: relative;">
+                <input type="text" id="inicio" class="search-input" placeholder="Ingrese dirección de inicio">
+                <button type="button" class="clear-button" onclick="limpiarInput('inicio', 'inicioLat', 'inicioLng')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; color: #666; padding: 5px 10px;">✕</button>
+            </div>
             <ul id="resultadosInicio" class="search-results"></ul>
             <input type="hidden" id="inicioLat">
             <input type="hidden" id="inicioLng">
         </div>
         <div class="form-group">
             <label>Ubicación de Destino:</label>
-            <input type="text" id="destino" class="search-input" placeholder="Ingrese dirección de destino">
+            <div style="position: relative;">
+                <input type="text" id="destino" class="search-input" placeholder="Ingrese dirección de destino">
+                <button type="button" class="clear-button" onclick="limpiarInput('destino', 'destinoLat', 'destinoLng')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; color: #666; padding: 5px 10px;">✕</button>
+            </div>
             <ul id="resultadosDestino" class="search-results"></ul>
             <input type="hidden" id="destinoLat">
             <input type="hidden" id="destinoLng">
@@ -85,6 +91,13 @@
     <label id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; color: #333; font-size: 18px;"></label>
 
     <script>
+        function limpiarInput(inputId, latId, lngId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(latId).value = '';
+            document.getElementById(lngId).value = '';
+            document.getElementById(inputId).style.backgroundColor = '';
+        }
+        
         let timeoutId;
 
         async function buscarDirecciones(texto) {
