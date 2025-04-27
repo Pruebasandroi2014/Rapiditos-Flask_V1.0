@@ -1,12 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Calculadora de Distancia</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.umd.js"></script>
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -22,13 +17,29 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        input[type="text"] { 
+        .search-input { 
             width: 100%;
             padding: 12px;
             margin-top: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
+        }
+        .search-results {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            display: none;
+        }
+        .search-results li {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .search-results li:hover {
+            background-color: #f0f0f0;
         }
         button { 
             padding: 12px 24px;
@@ -50,7 +61,6 @@
             background: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .leaflet-container { height: 200px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -58,126 +68,87 @@
     <form id="formulario">
         <div class="form-group">
             <label>Ubicación de Inicio:</label>
-            <div id="mapaInicio" style="height: 300px;"></div>
+            <input type="text" id="inicio" class="search-input" placeholder="Ingrese dirección de inicio">
+            <ul id="resultadosInicio" class="search-results"></ul>
+            <input type="hidden" id="inicioLat">
+            <input type="hidden" id="inicioLng">
         </div>
         <div class="form-group">
             <label>Ubicación de Destino:</label>
-            <div id="mapaDestino" style="height: 300px;"></div>
+            <input type="text" id="destino" class="search-input" placeholder="Ingrese dirección de destino">
+            <ul id="resultadosDestino" class="search-results"></ul>
+            <input type="hidden" id="destinoLat">
+            <input type="hidden" id="destinoLng">
         </div>
         <button type="submit">Calcular Distancia</button>
     </form>
     <div id="resultado"></div>
 
     <script>
-        // Configurar mapas
-        const mapaInicio = L.map('mapaInicio').setView([10.4806, -66.9036], 13);
-        const mapaDestino = L.map('mapaDestino').setView([10.4806, -66.9036], 13);
+        let timeoutId;
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(mapaInicio);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(mapaDestino);
-
-        // Configurar búsqueda
-        const provider = new GeoSearch.OpenStreetMapProvider();
-        
-        const searchInicio = new GeoSearch.GeoSearchControl({
-            provider: provider,
-            style: 'bar',
-            showMarker: true,
-            retainZoomLevel: false,
-        });
-
-        const searchDestino = new GeoSearch.GeoSearchControl({
-            provider: provider,
-            style: 'bar',
-            showMarker: true,
-            retainZoomLevel: false,
-        });
-
-        mapaInicio.addControl(searchInicio);
-        mapaDestino.addControl(searchDestino);
-
-        let coordenadasInicio = null;
-        let coordenadasDestino = null;
-
-        // Manejar selección en los mapas
-        function actualizarMarcadorInicio(result) {
-            coordenadasInicio = {
-                y: result.location.lat,
-                x: result.location.lng
-            };
-            console.log("Inicio seleccionado:", coordenadasInicio);
-            
-            if (marcadorInicio) {
-                mapaInicio.removeLayer(marcadorInicio);
+        async function buscarDirecciones(texto) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(texto)}`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
             }
-            marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
-            
-            // Limpiar resultados de búsqueda
-            setTimeout(() => {
-                const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
-                if (searchInput) {
-                    searchInput.value = result.location.label || '';
-                }
-                const resultsList = document.querySelector('#mapaInicio .results');
-                if (resultsList) {
-                    resultsList.innerHTML = '';
-                }
-            }, 100);
-            
-            mapaInicio.setView([coordenadasInicio.y, coordenadasInicio.x], 15);
         }
 
-        function actualizarMarcadorDestino(result) {
-            coordenadasDestino = {
-                y: result.location.lat,
-                x: result.location.lng
-            };
-            console.log("Destino seleccionado:", coordenadasDestino);
-            
-            if (marcadorDestino) {
-                mapaDestino.removeLayer(marcadorDestino);
-            }
-            marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
-            
-            // Limpiar resultados de búsqueda
-            setTimeout(() => {
-                const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
-                if (searchInput) {
-                    searchInput.value = result.location.label || '';
-                }
-                const resultsList = document.querySelector('#mapaDestino .results');
-                if (resultsList) {
-                    resultsList.innerHTML = '';
-                }
-            }, 100);
-            
-            mapaDestino.setView([coordenadasDestino.y, coordenadasDestino.x], 15);
+        function configurarBusqueda(inputId, resultadosId, latId, lngId) {
+            const input = document.getElementById(inputId);
+            const resultados = document.getElementById(resultadosId);
+            const latInput = document.getElementById(latId);
+            const lngInput = document.getElementById(lngId);
+
+            input.addEventListener('input', () => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(async () => {
+                    if (input.value.length > 2) {
+                        const direcciones = await buscarDirecciones(input.value);
+                        resultados.innerHTML = '';
+                        direcciones.forEach(dir => {
+                            const li = document.createElement('li');
+                            li.textContent = dir.display_name;
+                            li.addEventListener('click', () => {
+                                input.value = dir.display_name;
+                                latInput.value = dir.lat;
+                                lngInput.value = dir.lon;
+                                resultados.style.display = 'none';
+                            });
+                            resultados.appendChild(li);
+                        });
+                        resultados.style.display = direcciones.length ? 'block' : 'none';
+                    } else {
+                        resultados.style.display = 'none';
+                    }
+                }, 300);
+            });
         }
 
-        let marcadorInicio = null;
-        let marcadorDestino = null;
+        configurarBusqueda('inicio', 'resultadosInicio', 'inicioLat', 'inicioLng');
+        configurarBusqueda('destino', 'resultadosDestino', 'destinoLat', 'destinoLng');
 
-        mapaInicio.on('geosearch/showlocation', actualizarMarcadorInicio);
-        mapaDestino.on('geosearch/showlocation', actualizarMarcadorDestino);
-
-        // Manejar envío del formulario
         document.getElementById('formulario').onsubmit = async function(e) {
             e.preventDefault();
-            
-            if (!coordenadasInicio || !coordenadasDestino || !coordenadasInicio.x || !coordenadasInicio.y || !coordenadasDestino.x || !coordenadasDestino.y) {
-                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones válidas en ambos mapas";
+
+            const inicioLat = document.getElementById('inicioLat').value;
+            const inicioLng = document.getElementById('inicioLng').value;
+            const destinoLat = document.getElementById('destinoLat').value;
+            const destinoLng = document.getElementById('destinoLng').value;
+
+            if (!inicioLat || !inicioLng || !destinoLat || !destinoLng) {
+                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones válidas";
                 return;
             }
 
             const formData = new FormData();
-            formData.append('inicio', `${coordenadasInicio.y},${coordenadasInicio.x}`);
-            formData.append('destino', `${coordenadasDestino.y},${coordenadasDestino.x}`);
-            
+            formData.append('inicio', `${inicioLat},${inicioLng}`);
+            formData.append('destino', `${destinoLat},${destinoLng}`);
+
             try {
                 const response = await fetch('/calcular', {
                     method: 'POST',
