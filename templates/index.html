@@ -105,39 +105,37 @@
         let coordenadasDestino = null;
 
         // Manejar selección en los mapas
-        mapaInicio.on('geosearch/showlocation', function(result) {
+        function actualizarMarcadorInicio(result) {
             coordenadasInicio = {
-                y: result.location.lat || result.location.y,
-                x: result.location.lng || result.location.x
+                y: result.location.lat,
+                x: result.location.lng
             };
             console.log("Inicio seleccionado:", coordenadasInicio);
-        });
-
-        mapaDestino.on('geosearch/showlocation', function(result) {
-            coordenadasDestino = {
-                y: result.location.lat || result.location.y,
-                x: result.location.lng || result.location.x
-            };
-            console.log("Destino seleccionado:", coordenadasDestino);
-        });
-
-        // Agregar marcadores cuando se seleccionen ubicaciones
-        let marcadorInicio = null;
-        let marcadorDestino = null;
-
-        mapaInicio.on('geosearch/showlocation', function(result) {
+            
             if (marcadorInicio) {
                 mapaInicio.removeLayer(marcadorInicio);
             }
-            marcadorInicio = L.marker([result.location.lat || result.location.y, result.location.lng || result.location.x]).addTo(mapaInicio);
-        });
+            marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
+        }
 
-        mapaDestino.on('geosearch/showlocation', function(result) {
+        function actualizarMarcadorDestino(result) {
+            coordenadasDestino = {
+                y: result.location.lat,
+                x: result.location.lng
+            };
+            console.log("Destino seleccionado:", coordenadasDestino);
+            
             if (marcadorDestino) {
                 mapaDestino.removeLayer(marcadorDestino);
             }
-            marcadorDestino = L.marker([result.location.lat || result.location.y, result.location.lng || result.location.x]).addTo(mapaDestino);
-        });
+            marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
+        }
+
+        let marcadorInicio = null;
+        let marcadorDestino = null;
+
+        mapaInicio.on('geosearch/showlocation', actualizarMarcadorInicio);
+        mapaDestino.on('geosearch/showlocation', actualizarMarcadorDestino);
 
         // Manejar envío del formulario
         document.getElementById('formulario').onsubmit = async function(e) {
