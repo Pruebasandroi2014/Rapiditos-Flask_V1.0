@@ -3,10 +3,7 @@
 <head>
     <title>Calculadora de Distancia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -117,7 +114,7 @@
         </div>
     </form>
     <div id="resultado" style="display: none;"></div>
-    <div id="map" style="display: none;"></div>
+    
 
     <script>
         function limpiarInput(inputId, latId, lngId) {
@@ -221,57 +218,37 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${inicioLat},${inicioLng}&destination=${destinoLat},${destinoLng}`;
+                    const wazeUrl = `https://www.waze.com/ul?ll=${destinoLat}%2C${destinoLng}&navigate=yes&zoom=17`;
+                    
                     document.getElementById('resultado').innerHTML = `
-                        <div style="text-align: center; display: flex; justify-content: center; gap: 20px; background-color: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                            <div style="font-size: 20px; color: #2196F3;">
-                                🚗 ${data.distancia} km
+                        <div style="text-align: center; display: flex; flex-direction: column; gap: 20px; background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+                            <div style="display: flex; justify-content: center; gap: 20px;">
+                                <div style="font-size: 20px; color: #2196F3;">
+                                    🚗 ${data.distancia} km
+                                </div>
+                                <div style="font-size: 20px; color: #4CAF50;">
+                                    💰 $${data.costo.toFixed(2)}
+                                </div>
+                                <div style="font-size: 20px; color: #FF5722;">
+                                    💵 Bs.${data.monto_bs.toFixed(2)}
+                                </div>
                             </div>
-                            <div style="font-size: 20px; color: #4CAF50;">
-                                💰 $${data.costo.toFixed(2)}
-                            </div>
-                            <div style="font-size: 20px; color: #FF5722;">
-                                💵 Bs.${data.monto_bs.toFixed(2)}
+                            <div style="display: flex; justify-content: center; gap: 10px;">
+                                <a href="${googleMapsUrl}" target="_blank" style="text-decoration: none;">
+                                    <button style="background-color: #4285F4; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                                        <span style="font-size: 16px;">🗺️ Abrir en Google Maps</span>
+                                    </button>
+                                </a>
+                                <a href="${wazeUrl}" target="_blank" style="text-decoration: none;">
+                                    <button style="background-color: #33ccff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                                        <span style="font-size: 16px;">🚗 Abrir en Waze</span>
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     `;
                     document.getElementById('resultado').style.display = 'block';
-                    document.getElementById('map').style.marginTop = '10px';
-
-                    if (!map) {
-                        map = L.map('map', {
-                            center: [8.0, -66.0],
-                            zoom: 6,
-                            maxBounds: [
-                                [0.7, -73.0], // Esquina suroeste
-                                [12.5, -59.0]  // Esquina noreste
-                            ],
-                            minZoom: 6
-                        });
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '© OpenStreetMap contributors'
-                        }).addTo(map);
-                    }
-
-                    const bounds = L.latLngBounds([inicioLat, inicioLng], [destinoLat, destinoLng]);
-                    map.fitBounds(bounds, { 
-                        padding: [50, 50],
-                        maxZoom: 13
-                    });
-
-                    if (window.routingControl) {
-                        map.removeControl(window.routingControl);
-                    }
-
-                    window.routingControl = L.Routing.control({
-                        waypoints: [
-                            L.latLng(inicioLat, inicioLng),
-                            L.latLng(destinoLat, destinoLng)
-                        ],
-                        routeWhileDragging: true,
-                        show: false
-                    }).addTo(map);
-
-                    document.getElementById('map').style.display = 'block';
                 } else {
                     document.getElementById('resultado').innerHTML = `<span style="color: red">⚠️ ${data.mensaje}</span>`;
                 }
