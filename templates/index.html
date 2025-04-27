@@ -113,10 +113,12 @@
             Mostrar Ruta en el Mapa
         </button>
 
-        <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px; display: none;"></div>
+        <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px; display: none; width: 100%; z-index: 1;"></div>
 
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
         function limpiarInput(inputId, latId, lngId) {
