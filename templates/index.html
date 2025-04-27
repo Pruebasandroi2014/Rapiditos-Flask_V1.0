@@ -118,15 +118,17 @@
             marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
             
             // Limpiar resultados de búsqueda
-            const searchControl = searchInicio.searchElement;
-            if (searchControl) {
-                searchControl.clear();
+            setTimeout(() => {
                 const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
                 if (searchInput) {
                     searchInput.value = result.location.label || '';
                 }
-            }
-            // Centrar mapa en la ubicación seleccionada
+                const resultsList = document.querySelector('#mapaInicio .results');
+                if (resultsList) {
+                    resultsList.innerHTML = '';
+                }
+            }, 100);
+            
             mapaInicio.setView([coordenadasInicio.y, coordenadasInicio.x], 15);
         }
 
@@ -143,15 +145,17 @@
             marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
             
             // Limpiar resultados de búsqueda
-            const searchControl = searchDestino.searchElement;
-            if (searchControl) {
-                searchControl.clear();
+            setTimeout(() => {
                 const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
                 if (searchInput) {
                     searchInput.value = result.location.label || '';
                 }
-            }
-            // Centrar mapa en la ubicación seleccionada
+                const resultsList = document.querySelector('#mapaDestino .results');
+                if (resultsList) {
+                    resultsList.innerHTML = '';
+                }
+            }, 100);
+            
             mapaDestino.setView([coordenadasDestino.y, coordenadasDestino.x], 15);
         }
 
@@ -165,8 +169,8 @@
         document.getElementById('formulario').onsubmit = async function(e) {
             e.preventDefault();
             
-            if (!coordenadasInicio || !coordenadasDestino) {
-                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones en ambos mapas";
+            if (!coordenadasInicio || !coordenadasDestino || !coordenadasInicio.x || !coordenadasInicio.y || !coordenadasDestino.x || !coordenadasDestino.y) {
+                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones válidas en ambos mapas";
                 return;
             }
 
