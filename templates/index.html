@@ -29,6 +29,17 @@
         .form-group { 
             margin-bottom: 20px;
             background: white;
+
+        .routing-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -267,7 +278,7 @@
                     L.latLng(destinoLat, destinoLng)
                 ],
                 router: L.Routing.osrmv1({
-                    serviceUrl: 'https://router.project-osrm.org/route/v1',
+                    serviceUrl: 'https://router.project-osrm.org/route/v1/',
                     profile: 'driving'
                 }),
                 routeWhileDragging: false,
@@ -276,13 +287,20 @@
                 show: true,
                 lineOptions: {
                     styles: [
-                        {color: '#0066FF', opacity: 0.8, weight: 6},
-                        {color: '#33ccff', opacity: 0.5, weight: 4}
+                        {color: '#2B8BFF', opacity: 1, weight: 6},
+                        {color: '#73B5FF', opacity: 0.8, weight: 4}
                     ],
-                    addWaypoints: false
+                    addWaypoints: false,
+                    extendToWaypoints: true,
+                    missingRouteTolerance: 0
                 },
-                waypointMode: 'snap',
-                createMarker: function() { return null; },
+                altLineOptions: {
+                    styles: [
+                        {color: '#73B5FF', opacity: 0.4, weight: 4}
+                    ]
+                },
+                autoRoute: true,
+                containerClassName: 'routing-container',
                 createMarker: function(i, wp) {
                     return L.marker(wp.latLng, {
                         icon: L.icon({
