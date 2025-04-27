@@ -1,9 +1,34 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 import requests
 import time
 import config
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = 'static'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload_logo', methods=['POST'])
+def upload_logo():
+    if 'logo' not in request.files:
+        return jsonify({'success': False, 'mensaje': 'No se seleccionó ningún archivo'})
+    
+    file = request.files['logo']
+    if file.filename == '':
+        return jsonify({'success': False, 'mensaje': 'No se seleccionó ningún archivo'})
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename('logo.png')
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return jsonify({'success': True, 'mensaje': 'Logo subido correctamente'})
+    
+    return jsonify({'success': False, 'mensaje': 'Tipo de archivo no permitido'})
 
 @app.route('/admin')
 def admin():
