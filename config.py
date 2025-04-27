@@ -1,0 +1,2 @@
+
+COSTO_POR_KM = 0.0

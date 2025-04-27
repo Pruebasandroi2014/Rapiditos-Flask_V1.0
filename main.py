@@ -1,8 +1,24 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import time
+import config
 
 app = Flask(__name__)
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/admin/config', methods=['GET', 'POST'])
+def admin_config():
+    if request.method == 'POST':
+        data = request.get_json()
+        config.COSTO_POR_KM = float(data['costo_km'])
+        return jsonify({
+            'success': True,
+            'mensaje': 'Configuración actualizada correctamente'
+        })
+    return jsonify({'costo_km': config.COSTO_POR_KM})
 
 def obtener_coordenadas(direccion):
     try:
