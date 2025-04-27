@@ -117,11 +117,18 @@
             }
             marcadorInicio = L.marker([coordenadasInicio.y, coordenadasInicio.x]).addTo(mapaInicio);
             
-            // Limpiar el campo de búsqueda
+            // Limpiar resultados de búsqueda
             const searchInput = document.querySelector('#mapaInicio .leaflet-geosearch-bar form input');
             if (searchInput) {
                 searchInput.value = result.location.label || '';
+                // Ocultar resultados
+                const resultsList = document.querySelector('#mapaInicio .results');
+                if (resultsList) {
+                    resultsList.style.display = 'none';
+                }
             }
+            // Centrar mapa en la ubicación seleccionada
+            mapaInicio.setView([coordenadasInicio.y, coordenadasInicio.x], 15);
         }
 
         function actualizarMarcadorDestino(result) {
@@ -136,11 +143,18 @@
             }
             marcadorDestino = L.marker([coordenadasDestino.y, coordenadasDestino.x]).addTo(mapaDestino);
             
-            // Limpiar el campo de búsqueda
+            // Limpiar resultados de búsqueda
             const searchInput = document.querySelector('#mapaDestino .leaflet-geosearch-bar form input');
             if (searchInput) {
                 searchInput.value = result.location.label || '';
+                // Ocultar resultados
+                const resultsList = document.querySelector('#mapaDestino .results');
+                if (resultsList) {
+                    resultsList.style.display = 'none';
+                }
             }
+            // Centrar mapa en la ubicación seleccionada
+            mapaDestino.setView([coordenadasDestino.y, coordenadasDestino.x], 15);
         }
 
         let marcadorInicio = null;
