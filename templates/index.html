@@ -183,8 +183,9 @@
                     resultadoElement.textContent = data.mensaje;
                     resultadoElement.style.color = '#4CAF50';
                 } else {
-                    resultadoElement.textContent = 'Error: ' + data.mensaje;
+                    resultadoElement.textContent = 'Por favor intente nuevamente. El servidor está ocupado.';
                     resultadoElement.style.color = '#f44336';
+                    setTimeout(() => calcularDistancia(), 2000); // Reintento automático
                 }
                 resultadoElement.style.display = 'block';
             } catch (error) {
