@@ -9,13 +9,12 @@ def obtener_coordenadas(direccion):
     try:
         url = f"https://nominatim.openstreetmap.org/search?q={direccion}&format=json"
         headers = {'User-Agent': 'Replit Distance Calculator'}
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=5)
         data = response.json()
 
         if data and len(data) > 0:
             lat = float(data[0]["lat"])
             lon = float(data[0]["lon"])
-            time.sleep(0.5)  # Respetar límites de uso, reducido a medio segundo
             return lat, lon
         return None
     except Exception as e:
@@ -25,7 +24,7 @@ def obtener_coordenadas(direccion):
 def calcular_distancia(lat1, lon1, lat2, lon2):
     try:
         url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)
         
         if response.status_code != 200:
             print(f"Error en la API: {response.status_code}")
