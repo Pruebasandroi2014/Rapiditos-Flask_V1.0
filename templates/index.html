@@ -30,12 +30,25 @@
     <script>
         // Configurar autocompletado
         function initAutocomplete() {
-            new google.maps.places.Autocomplete(
-                document.getElementById('inicio')
+            const opcionesAutocomplete = {
+                types: ['geocode'],
+                fields: ['formatted_address', 'geometry'],
+                componentRestrictions: { country: 'VE' }  // Restringir a Venezuela
+            };
+
+            const autocompleteInicio = new google.maps.places.Autocomplete(
+                document.getElementById('inicio'),
+                opcionesAutocomplete
             );
-            new google.maps.places.Autocomplete(
-                document.getElementById('destino')
+
+            const autocompleteDestino = new google.maps.places.Autocomplete(
+                document.getElementById('destino'),
+                opcionesAutocomplete
             );
+
+            // Activar búsqueda en tiempo real
+            autocompleteInicio.setFields(['address_components', 'formatted_address', 'geometry']);
+            autocompleteDestino.setFields(['address_components', 'formatted_address', 'geometry']);
         }
 
         // Manejar envío del formulario
