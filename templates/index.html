@@ -125,16 +125,15 @@
                                 setTimeout(() => input.style.backgroundColor = '', 500);
 
                                 // Verificar si ambas ubicaciones están seleccionadas y calcular
-                                setTimeout(() => {
-                                    const inicioLat = document.getElementById('inicioLat').value;
-                                    const inicioLng = document.getElementById('inicioLng').value;
-                                    const destinoLat = document.getElementById('destinoLat').value;
-                                    const destinoLng = document.getElementById('destinoLng').value;
+                                const inicioLat = document.getElementById('inicioLat').value;
+                                const inicioLng = document.getElementById('inicioLng').value;
+                                const destinoLat = document.getElementById('destinoLat').value;
+                                const destinoLng = document.getElementById('destinoLng').value;
 
-                                    if (inicioLat && inicioLng && destinoLat && destinoLng) {
-                                        calcularDistancia();
-                                    }
-                                }, 100);
+                                if (inicioLat && inicioLng && destinoLat && destinoLng) {
+                                    document.getElementById('resultado').textContent = "Calculando...";
+                                    calcularDistancia();
+                                }
                             });
                             resultados.appendChild(li);
                         });

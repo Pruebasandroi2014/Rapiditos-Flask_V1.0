@@ -15,7 +15,7 @@ def obtener_coordenadas(direccion):
         if data and len(data) > 0:
             lat = float(data[0]["lat"])
             lon = float(data[0]["lon"])
-            time.sleep(1)  # Respetar límites de uso
+            time.sleep(0.5)  # Respetar límites de uso, reducido a medio segundo
             return lat, lon
         return None
     except Exception as e:
