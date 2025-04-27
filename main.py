@@ -41,13 +41,15 @@ def home():
 
 @app.route('/calcular', methods=['POST'])
 def calcular():
-    direccion_inicio = request.form['inicio']
-    direccion_destino = request.form['destino']
-    
-    coordenadas_inicio = obtener_coordenadas(direccion_inicio)
-    coordenadas_destino = obtener_coordenadas(direccion_destino)
-    
-    if coordenadas_inicio and coordenadas_destino:
+    try:
+        inicio = request.form['inicio'].split(',')
+        destino = request.form['destino'].split(',')
+        
+        lat1, lon1 = float(inicio[0]), float(inicio[1])
+        lat2, lon2 = float(destino[0]), float(destino[1])
+        
+        distancia = calcular_distancia(lat1, lon1, lat2, lon2)
+        if distancia:
         distancia = calcular_distancia(*coordenadas_inicio, *coordenadas_destino)
         return jsonify({
             "success": True,

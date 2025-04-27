@@ -103,10 +103,32 @@
         mapaInicio.addControl(searchInicio);
         mapaDestino.addControl(searchDestino);
 
+        let coordenadasInicio = null;
+        let coordenadasDestino = null;
+
+        // Manejar selección en los mapas
+        mapaInicio.on('geosearch/showlocation', function(result) {
+            coordenadasInicio = result.location;
+            document.getElementById('inicio').value = result.location.label;
+        });
+
+        mapaDestino.on('geosearch/showlocation', function(result) {
+            coordenadasDestino = result.location;
+            document.getElementById('destino').value = result.location.label;
+        });
+
         // Manejar envío del formulario
         document.getElementById('formulario').onsubmit = async function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
+            
+            if (!coordenadasInicio || !coordenadasDestino) {
+                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones en ambos mapas";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('inicio', `${coordenadasInicio.y},${coordenadasInicio.x}`);
+            formData.append('destino', `${coordenadasDestino.y},${coordenadasDestino.x}`);
             
             try {
                 const response = await fetch('/calcular', {
@@ -117,6 +139,7 @@
                 document.getElementById('resultado').textContent = data.mensaje;
             } catch (error) {
                 console.error('Error:', error);
+                document.getElementById('resultado').textContent = "Error al calcular la distancia";
             }
         };
     </script>
