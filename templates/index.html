@@ -106,6 +106,10 @@
 
             input.addEventListener('input', () => {
                 clearTimeout(timeoutId);
+                // Limpiar coordenadas cuando el usuario empieza a escribir
+                latInput.value = '';
+                lngInput.value = '';
+                
                 timeoutId = setTimeout(async () => {
                     if (input.value.length > 2) {
                         const direcciones = await buscarDirecciones(input.value);
@@ -117,15 +121,25 @@
                                 input.value = dir.display_name;
                                 latInput.value = dir.lat;
                                 lngInput.value = dir.lon;
+                                resultados.innerHTML = '';
                                 resultados.style.display = 'none';
                             });
                             resultados.appendChild(li);
                         });
                         resultados.style.display = direcciones.length ? 'block' : 'none';
                     } else {
+                        resultados.innerHTML = '';
                         resultados.style.display = 'none';
                     }
                 }, 300);
+            });
+
+            // Limpiar resultados cuando se hace clic fuera
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !resultados.contains(e.target)) {
+                    resultados.innerHTML = '';
+                    resultados.style.display = 'none';
+                }
             });
         }
 
@@ -141,7 +155,7 @@
             const destinoLng = document.getElementById('destinoLng').value;
 
             if (!inicioLat || !inicioLng || !destinoLat || !destinoLng) {
-                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones válidas";
+                document.getElementById('resultado').textContent = "Por favor selecciona ubicaciones de la lista de sugerencias para ambos puntos";
                 return;
             }
 
