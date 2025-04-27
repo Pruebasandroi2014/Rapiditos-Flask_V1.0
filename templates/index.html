@@ -287,7 +287,7 @@
                 show: false,
                 lineOptions: {
                     styles: [
-                        {color: '#4CAF50', opacity: 1, weight: 5}
+                        {color: '#2196F3', opacity: 1, weight: 6}
                     ],
                     addWaypoints: false,
                     extendToWaypoints: true,
@@ -295,7 +295,7 @@
                 },
                 altLineOptions: {
                     styles: [
-                        {color: '#90CAF9', opacity: 0.6, weight: 4}
+                        {color: '#64B5F6', opacity: 0.7, weight: 4}
                     ]
                 },
                 autoRoute: true,
@@ -322,10 +322,16 @@
                 // Actualizar los marcadores con el tiempo estimado
                 const tiempo = Math.round(summary.totalTime / 60);
                 const distancia = (summary.totalDistance / 1000).toFixed(1);
+                // Calcular hora estimada de llegada
+                const ahora = new Date();
+                const llegada = new Date(ahora.getTime() + (tiempo * 60 * 1000));
+                const horaLlegada = llegada.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                
                 document.getElementById('resultado').innerHTML = `
                     <div style="background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <div style="font-size: 20px; margin-bottom: 10px;">🚗 ${distancia} km</div>
-                        <div style="color: #666;">⏱️ ${tiempo} minutos aprox.</div>
+                        <div style="color: #666; margin-bottom: 5px;">⏱️ ${tiempo} minutos aprox.</div>
+                        <div style="color: #2196F3; font-weight: bold;">Llegada estimada: ${horaLlegada}</div>
                     </div>
                 `;
             });
