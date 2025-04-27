@@ -24,11 +24,10 @@ def obtener_coordenadas(direccion):
 def calcular_distancia(lat1, lon1, lat2, lon2):
     try:
         url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=15)
         
         if response.status_code != 200:
             print(f"Error en la API: {response.status_code}")
-            return None
             return None
             
         data = response.json()

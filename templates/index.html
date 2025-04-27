@@ -185,10 +185,18 @@
                 } else {
                     resultadoElement.textContent = 'Por favor intente nuevamente. El servidor está ocupado.';
                     resultadoElement.style.color = '#f44336';
-                    setTimeout(() => {
-                        document.getElementById('resultado').textContent = "Reintentando cálculo...";
-                        calcularDistancia();
-                    }, 3000); // Reintento automático después de 3 segundos
+                    let intentos = 0;
+                    const maxIntentos = 3;
+                    const reintentarCalculo = () => {
+                        if (intentos < maxIntentos) {
+                            intentos++;
+                            document.getElementById('resultado').textContent = `Reintentando cálculo... (intento ${intentos} de ${maxIntentos})`;
+                            setTimeout(calcularDistancia, 5000);
+                        } else {
+                            document.getElementById('resultado').textContent = "No se pudo calcular la distancia después de varios intentos. Por favor, inténtelo más tarde.";
+                        }
+                    };
+                    reintentarCalculo();
                 }
                 resultadoElement.style.display = 'block';
             } catch (error) {
