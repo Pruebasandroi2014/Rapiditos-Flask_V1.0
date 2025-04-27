@@ -3,6 +3,10 @@
 <head>
     <title>Calculadora de Distancia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <style>
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -29,18 +33,6 @@
         .form-group { 
             margin-bottom: 20px;
             background: white;
-        }
-        .routing-container {
-            background-color: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            margin: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .form-group {
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -89,6 +81,11 @@
             background: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        #map {
+            height: 400px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -118,63 +115,11 @@
             <input type="hidden" id="destinoLat">
             <input type="hidden" id="destinoLng">
         </div>
-        </form>
-    <div id="resultado" style="display: block; margin-top: 20px; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-weight: bold; color: #333; font-size: 18px;"></div>
-
-        <button id="mostrarRuta" style="display: none; margin-top: 20px; width: 100%; padding: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
-            Mostrar Ruta en el Mapa
-        </button>
-
-        <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px; display: none; width: 100%; z-index: 1;"></div>
-
-        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    </form>
+    <div id="resultado" style="display: none;"></div>
+    <div id="map" style="display: none;"></div>
 
     <script>
-        function initAutocomplete() {
-            const inicioAutocomplete = new google.maps.places.Autocomplete(
-                document.getElementById('inicio'),
-                { types: ['geocode'] }
-            );
-            
-            const destinoAutocomplete = new google.maps.places.Autocomplete(
-                document.getElementById('destino'),
-                { types: ['geocode'] }
-            );
-
-            inicioAutocomplete.addListener('place_changed', () => {
-                const place = inicioAutocomplete.getPlace();
-                if (place.geometry) {
-                    document.getElementById('inicioLat').value = place.geometry.location.lat();
-                    document.getElementById('inicioLng').value = place.geometry.location.lng();
-                    document.getElementById('inicio').style.backgroundColor = '#e8f5e9';
-                    setTimeout(() => document.getElementById('inicio').style.backgroundColor = '', 500);
-                    checkAndCalculate();
-                }
-            });
-
-            destinoAutocomplete.addListener('place_changed', () => {
-                const place = destinoAutocomplete.getPlace();
-                if (place.geometry) {
-                    document.getElementById('destinoLat').value = place.geometry.location.lat();
-                    document.getElementById('destinoLng').value = place.geometry.location.lng();
-                    document.getElementById('destino').style.backgroundColor = '#e8f5e9';
-                    setTimeout(() => document.getElementById('destino').style.backgroundColor = '', 500);
-                    checkAndCalculate();
-                }
-            });
-        }
-
-        function checkAndCalculate() {
-            const inicioLat = document.getElementById('inicioLat').value;
-            const inicioLng = document.getElementById('inicioLng').value;
-            const destinoLat = document.getElementById('destinoLat').value;
-            const destinoLng = document.getElementById('destinoLng').value;
-
-            if (inicioLat && inicioLng && destinoLat && destinoLng) {
-                calcularDistancia();
-            }
-        }
-
         function limpiarInput(inputId, latId, lngId) {
             document.getElementById(inputId).value = '';
             document.getElementById(latId).value = '';
@@ -183,6 +128,7 @@
         }
 
         let timeoutId;
+        let map = null;
 
         async function buscarDirecciones(texto) {
             try {
@@ -222,14 +168,12 @@
                                 input.style.backgroundColor = '#e8f5e9';
                                 setTimeout(() => input.style.backgroundColor = '', 500);
 
-                                // Verificar si ambas ubicaciones están seleccionadas y calcular
                                 const inicioLat = document.getElementById('inicioLat').value;
                                 const inicioLng = document.getElementById('inicioLng').value;
                                 const destinoLat = document.getElementById('destinoLat').value;
                                 const destinoLng = document.getElementById('destinoLng').value;
 
                                 if (inicioLat && inicioLng && destinoLat && destinoLng) {
-                                    document.getElementById('resultado').textContent = "Calculando...";
                                     calcularDistancia();
                                 }
                             });
@@ -254,7 +198,6 @@
         configurarBusqueda('inicio', 'resultadosInicio', 'inicioLat', 'inicioLng');
         configurarBusqueda('destino', 'resultadosDestino', 'destinoLat', 'destinoLng');
 
-
         async function calcularDistancia() {
             const inicioLat = document.getElementById('inicioLat').value;
             const inicioLng = document.getElementById('inicioLng').value;
@@ -262,7 +205,7 @@
             const destinoLng = document.getElementById('destinoLng').value;
 
             if (!inicioLat || !inicioLng || !destinoLat || !destinoLng) {
-                document.getElementById('resultado').innerHTML = '<span style="color: red; font-weight: bold">⚠️ Por favor selecciona una dirección de la lista desplegable que aparece al escribir, tanto para el inicio como para el destino</span>';
+                document.getElementById('resultado').innerHTML = '<span style="color: red">⚠️ Por favor selecciona ambas ubicaciones</span>';
                 return;
             }
 
@@ -276,115 +219,52 @@
                     body: formData
                 });
                 const data = await response.json();
-                const resultadoElement = document.getElementById('resultado');
+
                 if (data.success) {
-                    resultadoElement.innerHTML = `
-                        <div>Distancia: ${data.distancia} km</div>
-                        <div>Costo: $${data.costo.toFixed(2)}</div>
-                    `;
-                    resultadoElement.style.color = '#4CAF50';
-                    document.getElementById('mostrarRuta').style.display = 'block';
-                } else {
-                    resultadoElement.textContent = 'No se pudo calcular la distancia. Por favor, intente nuevamente.';
-                    resultadoElement.style.color = '#f44336';
-                }
-                resultadoElement.style.display = 'block';
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('resultado').textContent = "Error al calcular la distancia";
-            }
-        }
-
-        document.getElementById('mostrarRuta').addEventListener('click', () => {
-            const inicioLat = parseFloat(document.getElementById('inicioLat').value);
-            const inicioLng = parseFloat(document.getElementById('inicioLng').value);
-            const destinoLat = parseFloat(document.getElementById('destinoLat').value);
-            const destinoLng = parseFloat(document.getElementById('destinoLng').value);
-
-            if (isNaN(inicioLat) || isNaN(inicioLng) || isNaN(destinoLat) || isNaN(destinoLng)) return;
-
-            document.getElementById('map').style.display = 'block';
-            const directionsService = new google.maps.DirectionsService();
-            const directionsRenderer = new google.maps.DirectionsRenderer();
-            
-            const map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: { lat: parseFloat(inicioLat), lng: parseFloat(inicioLng) }
-            });
-            
-            directionsRenderer.setMap(map);
-            
-            const request = {
-                origin: { lat: parseFloat(inicioLat), lng: parseFloat(inicioLng) },
-                destination: { lat: parseFloat(destinoLat), lng: parseFloat(destinoLng) },
-                travelMode: google.maps.TravelMode.DRIVING,
-                optimizeWaypoints: true
-            };
-            
-            directionsService.route(request, function(response, status) {
-                if (status === 'OK') {
-                    directionsRenderer.setDirections(response);
-                    const route = response.routes[0];
-                    const distancia = route.legs[0].distance.text;
-                    const tiempo = route.legs[0].duration.text;
-                    
                     document.getElementById('resultado').innerHTML = `
-                        <div style="background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 20px; margin-bottom: 10px;">🚗 ${distancia}</div>
-                            <div style="color: #666; margin-bottom: 5px;">⏱️ ${tiempo}</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; color: #2196F3; margin-bottom: 10px;">
+                                🚗 ${data.distancia} km
+                            </div>
+                            <div style="font-size: 20px; color: #4CAF50;">
+                                💰 $${data.costo.toFixed(2)}
+                            </div>
                         </div>
                     `;
+                    document.getElementById('resultado').style.display = 'block';
+
+                    if (!map) {
+                        map = L.map('map').setView([inicioLat, inicioLng], 13);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(map);
+                    }
+
+                    const bounds = L.latLngBounds([inicioLat, inicioLng], [destinoLat, destinoLng]);
+                    map.fitBounds(bounds, { padding: [50, 50] });
+
+                    if (window.routingControl) {
+                        map.removeControl(window.routingControl);
+                    }
+
+                    window.routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(inicioLat, inicioLng),
+                            L.latLng(destinoLat, destinoLng)
+                        ],
+                        routeWhileDragging: false,
+                        show: false
+                    }).addTo(map);
+
+                    document.getElementById('map').style.display = 'block';
+                } else {
+                    document.getElementById('resultado').innerHTML = `<span style="color: red">⚠️ ${data.mensaje}</span>`;
                 }
-            });
-                createMarker: function(i, wp) {
-                    return L.marker(wp.latLng, {
-                        icon: L.divIcon({
-                            className: 'custom-div-icon',
-                            html: `<div style='background-color: ${i === 0 ? '#1976D2' : '#D32F2F'}; width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);'></div>`,
-                            iconSize: [22, 22],
-                            iconAnchor: [11, 11]
-                        })
-                    });
-                },
-                formatter: new L.Routing.Formatter({
-                    units: 'metric',
-                    roundingSensitivity: 1
-                })
-            }).addTo(map);
-
-            control.on('routesfound', function(e) {
-                const routes = e.routes;
-                const summary = routes[0].summary;
-                // Actualizar los marcadores con el tiempo estimado
-                const tiempo = Math.round(summary.totalTime / 60);
-                const distancia = (summary.totalDistance / 1000).toFixed(1);
-                // Calcular hora estimada de llegada
-                const ahora = new Date();
-                const llegada = new Date(ahora.getTime() + (tiempo * 60 * 1000));
-                const horaLlegada = llegada.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-                document.getElementById('resultado').innerHTML = `
-                    <div style="background-color: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <div style="font-size: 20px; margin-bottom: 10px;">🚗 ${distancia} km</div>
-                        <div style="color: #666; margin-bottom: 5px;">⏱️ ${tiempo} minutos aprox.</div>
-                        <div style="color: #2196F3; font-weight: bold;">Llegada estimada: ${horaLlegada}</div>
-                    </div>
-                `;
-            });
-
-            control.on('routesfound', function(e) {
-                const routes = e.routes;
-                const summary = routes[0].summary;
-                console.log('Distancia total:', summary.totalDistance);
-                console.log('Tiempo total:', summary.totalTime);
-            });
-
-            document.getElementById('map').style.display = 'block';
-        });
-    </script>
-    <script>
-        // Inicializar el autocompletado cuando se carga la página
-        window.onload = initAutocomplete;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('resultado').innerHTML = '<span style="color: red">⚠️ Error al calcular la distancia</span>';
+            }
+        }
     </script>
 </body>
 </html>
