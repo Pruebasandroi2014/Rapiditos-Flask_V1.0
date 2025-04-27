@@ -1,6 +1,9 @@
 
+from flask import Flask
 import requests
 import time
+
+app = Flask(__name__)
 
 def obtener_coordenadas(direccion):
     url = f"https://nominatim.openstreetmap.org/search?q={direccion}&format=json"
@@ -25,26 +28,22 @@ def calcular_distancia(lat1, lon1, lat2, lon2):
         return round(distancia_km, 2)
     return None
 
-# 📍 Ejemplo de uso
-direccion_inicio = "Caracas, Venezuela"
-direccion_destino = "Maracaibo, Venezuela"
-
-coordenadas_inicio = obtener_coordenadas(direccion_inicio)
-coordenadas_destino = obtener_coordenadas(direccion_destino)
-
-if coordenadas_inicio and coordenadas_destino:
-    distancia = calcular_distancia(*coordenadas_inicio, *coordenadas_destino)
-    print(f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km")
-else:
-    print("Error al obtener coordenadas.")
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)from flask import Flask
-
-app = Flask(__name__)
-
 @app.route('/')
 def hello():
     return 'Hello, World!'
+
+@app.route('/calcular')
+def calcular():
+    direccion_inicio = "Caracas, Venezuela"
+    direccion_destino = "Maracaibo, Venezuela"
+    
+    coordenadas_inicio = obtener_coordenadas(direccion_inicio)
+    coordenadas_destino = obtener_coordenadas(direccion_destino)
+    
+    if coordenadas_inicio and coordenadas_destino:
+        distancia = calcular_distancia(*coordenadas_inicio, *coordenadas_destino)
+        return f"Distancia entre {direccion_inicio} y {direccion_destino}: {distancia} km"
+    return "Error al obtener coordenadas."
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
