@@ -22,17 +22,20 @@ def obtener_coordenadas(direccion):
         return None
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
-    try:
-        url = f"https://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
-        response = requests.get(url, timeout=10)
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("code") == "Ok" and "routes" in data:
-                return round(data["routes"][0]["distance"] / 1000, 2)
-        return None
-            
-        data = response.json()
+    from math import radians, sin, cos, sqrt, atan2
+    
+    R = 6371  # Radio de la Tierra en kilómetros
+    
+    lat1, lon1, lat2, lon2 = map(radians, [float(lat1), float(lon1), float(lat2), float(lon2)])
+    
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    distancia = R * c
+    
+    return round(distancia, 2)
         
         if data.get("code") != "Ok":
             print(f"Error en la respuesta: {data.get('message', 'Error desconocido')}")
