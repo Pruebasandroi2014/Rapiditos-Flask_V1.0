@@ -106,11 +106,17 @@
 
         // Manejar selección en los mapas
         mapaInicio.on('geosearch/showlocation', function(result) {
-            coordenadasInicio = result.location;
+            coordenadasInicio = {
+                y: result.location.lat || result.location.y,
+                x: result.location.lng || result.location.x
+            };
         });
 
         mapaDestino.on('geosearch/showlocation', function(result) {
-            coordenadasDestino = result.location;
+            coordenadasDestino = {
+                y: result.location.lat || result.location.y,
+                x: result.location.lng || result.location.x
+            };
         });
 
         // Manejar envío del formulario
