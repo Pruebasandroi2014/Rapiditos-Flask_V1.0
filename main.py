@@ -24,19 +24,12 @@ def obtener_coordenadas(direccion):
 def calcular_distancia(lat1, lon1, lat2, lon2):
     try:
         url = f"https://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
-        for intento in range(3):
-            try:
-                response = requests.get(url, timeout=30)
-                if response.status_code == 200:
-                    data = response.json()
-                    if data.get("code") == "Ok" and "routes" in data:
-                        return round(data["routes"][0]["distance"] / 1000, 2)
-                time.sleep(2)  # Esperar 2 segundos entre intentos
-            except requests.exceptions.RequestException as e:
-                print(f"Error en intento {intento + 1}: {str(e)}")
-                if intento < 2:  # Si no es el último intento
-                    time.sleep(2)
-                continue
+        response = requests.get(url, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("code") == "Ok" and "routes" in data:
+                return round(data["routes"][0]["distance"] / 1000, 2)
         return None
             
         data = response.json()

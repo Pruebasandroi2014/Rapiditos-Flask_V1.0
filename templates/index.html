@@ -183,11 +183,8 @@
                     resultadoElement.textContent = data.mensaje;
                     resultadoElement.style.color = '#4CAF50';
                 } else {
-                    resultadoElement.textContent = 'El servidor está procesando su solicitud...';
-                    resultadoElement.style.color = '#ff9800';
-                    setTimeout(() => {
-                        calcularDistancia();
-                    }, 5000);
+                    resultadoElement.textContent = 'No se pudo calcular la distancia. Por favor, intente nuevamente.';
+                    resultadoElement.style.color = '#f44336';
                 }
                 resultadoElement.style.display = 'block';
             } catch (error) {
