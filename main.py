@@ -23,10 +23,10 @@ def obtener_coordenadas(direccion):
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
     try:
-        url = f"http://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
+        url = f"https://router.project-osrm.org/route/v1/driving/{lon1},{lat1};{lon2},{lat2}?overview=false"
         for intento in range(3):
             try:
-                response = requests.get(url, timeout=20)
+                response = requests.get(url, timeout=30)
                 if response.status_code == 200:
                     data = response.json()
                     if data.get("code") == "Ok" and "routes" in data:
