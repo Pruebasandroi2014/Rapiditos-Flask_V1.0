@@ -251,37 +251,44 @@
 
             const map = L.map('map').setView([inicioLat, inicioLng], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
             }).addTo(map);
 
             const inicioMarker = L.marker([inicioLat, inicioLng]).addTo(map);
             const destinoMarker = L.marker([destinoLat, destinoLng]).addTo(map);
 
-            L.Routing.control({
+            const bounds = L.latLngBounds([inicioLat, inicioLng], [destinoLat, destinoLng]);
+            map.fitBounds(bounds, { padding: [50, 50] });
+
+            const control = L.Routing.control({
                 waypoints: [
                     L.latLng(inicioLat, inicioLng),
                     L.latLng(destinoLat, destinoLng)
                 ],
                 router: L.Routing.osrmv1({
-                    serviceUrl: 'https://router.project-osrm.org/route/v1/driving/',
+                    serviceUrl: 'https://router.project-osrm.org/route/v1/',
                     profile: 'driving'
                 }),
                 routeWhileDragging: false,
                 showAlternatives: true,
-                altLineOptions: {
-                    styles: [
-                        {color: '#4D94FF', opacity: 0.6, weight: 4}
-                    ]
-                },
+                fitSelectedRoutes: true,
+                show: true,
                 lineOptions: {
                     styles: [
                         {color: '#0066FF', opacity: 0.8, weight: 6}
-                    ]
+                    ],
+                    addWaypoints: false
                 },
-                show: true,
-                collapsible: true,
-                autoRoute: true
+                createMarker: function() { return null; }
             }).addTo(map);
+
+            control.on('routesfound', function(e) {
+                const routes = e.routes;
+                const summary = routes[0].summary;
+                console.log('Distancia total:', summary.totalDistance);
+                console.log('Tiempo total:', summary.totalTime);
+            });
 
             document.getElementById('map').style.display = 'block';
         });
