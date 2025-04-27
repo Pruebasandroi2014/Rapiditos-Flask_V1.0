@@ -259,18 +259,13 @@
                         map.removeControl(window.routingControl);
                     }
 
-                    // Agregar marcadores
-                    const inicioMarker = L.marker([inicioLat, inicioLng]).addTo(map);
-                    const destinoMarker = L.marker([destinoLat, destinoLng]).addTo(map);
-
                     window.routingControl = L.Routing.control({
                         waypoints: [
                             L.latLng(inicioLat, inicioLng),
                             L.latLng(destinoLat, destinoLng)
                         ],
-                        routeWhileDragging: false,
-                        show: false,
-                        addWaypoints: false
+                        routeWhileDragging: true,
+                        show: false
                     }).addTo(map);
 
                     document.getElementById('map').style.display = 'block';
