@@ -185,7 +185,10 @@
                 } else {
                     resultadoElement.textContent = 'Por favor intente nuevamente. El servidor está ocupado.';
                     resultadoElement.style.color = '#f44336';
-                    setTimeout(() => calcularDistancia(), 2000); // Reintento automático
+                    setTimeout(() => {
+                        document.getElementById('resultado').textContent = "Reintentando cálculo...";
+                        calcularDistancia();
+                    }, 3000); // Reintento automático después de 3 segundos
                 }
                 resultadoElement.style.display = 'block';
             } catch (error) {
