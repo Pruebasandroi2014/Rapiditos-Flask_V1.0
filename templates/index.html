@@ -278,15 +278,16 @@
             const bounds = L.latLngBounds([inicioLat, inicioLng], [destinoLat, destinoLng]);
             map.fitBounds(bounds, { padding: [50, 50] });
 
-            const control = L.Routing.control({
+            window.routingControl = L.Routing.control({
                 waypoints: [
                     L.latLng(inicioLat, inicioLng),
                     L.latLng(destinoLat, destinoLng)
                 ],
                 router: L.Routing.osrmv1({
-                    serviceUrl: 'https://router.project-osrm.org/route/v1',
-                    profile: 'driving',
-                    timeout: 30 * 1000
+                    serviceUrl: 'https://router.project-osrm.org/route/v1/driving',
+                    profile: 'car',
+                    timeout: 30 * 1000,
+                    geometryOnly: false
                 }),
                 routeWhileDragging: false,
                 showAlternatives: true,
