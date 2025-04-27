@@ -18,16 +18,16 @@ def allowed_file(filename):
 def upload_logo():
     if 'logo' not in request.files:
         return jsonify({'success': False, 'mensaje': 'No se seleccionó ningún archivo'})
-    
+
     file = request.files['logo']
     if file.filename == '':
         return jsonify({'success': False, 'mensaje': 'No se seleccionó ningún archivo'})
-    
+
     if file and allowed_file(file.filename):
         filename = secure_filename('logo.png')
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return jsonify({'success': True, 'mensaje': 'Logo subido correctamente'})
-    
+
     return jsonify({'success': False, 'mensaje': 'Tipo de archivo no permitido'})
 
 @app.route('/admin')
@@ -39,11 +39,12 @@ def admin_config():
     if request.method == 'POST':
         data = request.get_json()
         config.COSTO_POR_KM = float(data['costo_km'])
+        config.TASA_BS = float(data['tasa_bs']) # Added Tasa Bs
         return jsonify({
             'success': True,
             'mensaje': 'Configuración actualizada correctamente'
         })
-    return jsonify({'costo_km': config.COSTO_POR_KM})
+    return jsonify({'costo_km': config.COSTO_POR_KM, 'tasa_bs': config.TASA_BS}) # Added tasa_bs
 
 def obtener_coordenadas(direccion):
     try:
@@ -93,11 +94,13 @@ def calcular():
         distancia = calcular_distancia(lat1, lon1, lat2, lon2)
         if distancia:
             costo = distancia * config.COSTO_POR_KM
+            monto_bs = costo * config.TASA_BS # Calculate Monto Bs
             return jsonify({
                 "success": True,
                 "distancia": distancia,
                 "costo": costo,
-                "mensaje": f"La distancia es: {distancia} km y el costo es: ${costo:.2f}"
+                "monto_bs": monto_bs, # Added monto_bs
+                "mensaje": f"La distancia es: {distancia} km, el costo es: ${costo:.2f}, Monto Bs: {monto_bs:.2f}" # Added Monto Bs to message
             })
         return jsonify({
             "success": False,

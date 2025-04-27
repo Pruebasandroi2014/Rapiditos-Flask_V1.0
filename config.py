@@ -1,2 +1,3 @@
 
 COSTO_POR_KM = 0.0
+TASA_BS = 0.0
